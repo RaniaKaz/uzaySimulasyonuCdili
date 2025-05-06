@@ -22,5 +22,5 @@ Kisi kisiOlusturucu(char*, int, int, char*);
 char* getUzayAraciAdi(const Kisi);
 void birSaatGecir(const Kisi);
 int hayattaMi(const Kisi);
-void yoket(const Kisi);
+void kisiYoket(const Kisi);
  #endif
