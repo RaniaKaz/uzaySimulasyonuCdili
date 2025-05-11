@@ -19,15 +19,18 @@ struct GEZEGEN{
     void (*nufusuGuncelle)(struct GEZEGEN*); //yolda olan araçlarındaki yolculari nufüstan sil
     void (*yoket)(struct GEZEGEN*);
 };
-typedef struct{
+
+typedef struct GEZEGEN* Gezegen;
+typedef struct GezegenArrayList* gezegenArrayList;
+
+struct GezegenArrayList{
     struct GEZEGEN** gezegenler;
     int boyut;
     int kapasite;
     void (*add)(gezegenArrayList*,struct GEZEGEN*);
     void (*addAll)( gezegenArrayList*,struct gezegenArrayList*);
     void (*clear)(gezegenArrayList*);
-} gezegenArrayList;
-typedef struct GEZEGEN* Gezegen;
+};
 
 Gezegen gezegenOlusturucu(char*, int, Zaman);
 char* getIsim(const Gezegen);
@@ -35,13 +38,13 @@ int getGununSaatSayisi(const Gezegen);
 Zaman getTarih(const Gezegen);
 kisiArrayList getNufus(const Gezegen);
 void birSaatGecir(const Gezegen);
-void aractakiYolculariEkle(const Gezegen, const UzayAraci);//kisi yerine uzay araci
-void aractakiYolculariSil(const Gezegen, Kisi);//kisi yerine uzay araci
+void aractakiYolculariEkle(const Gezegen,UzayAraci);//kisi yerine uzay araci
+void aractakiYolculariSil(const Gezegen,UzayAraci);//kisi yerine uzay araci
 void nufusuGuncelle(const Gezegen);
 void gezegenYoket(Gezegen);
 
 //arrayliste ait fonksiyonlar
-void addToListGezegen(gezegenArrayList*, const Gezegen);
-void addAllToListGezegen(gezegenArrayList*, const gezegenArrayList*);
-void clearListGezegen(gezegenArrayList*);
+void addToListGezegen(gezegenArrayList, const Gezegen);
+void addAllToListGezegen(gezegenArrayList, const gezegenArrayList);
+void clearListGezegen(gezegenArrayList);
 #endif

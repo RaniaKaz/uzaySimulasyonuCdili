@@ -12,9 +12,9 @@ struct DOSYAOKUMA{
 };
 typedef struct DOSYAOKUMA* DosyaOkuma;
 
-kisiArrayList kisileriOku(const DosyaOkuma, char*);
-gezegenArrayList gezegenleriOku(const DosyaOkuma,char*);
-uzayAraciArrayList uzayAraclariniOku(const DosyaOkuma,char*);
+kisiArrayList kisileriOku(char*);
+gezegenArrayList gezegenleriOku(char*);
+uzayAraciArrayList uzayAraclariniOku(char*);
 void dosyaOkumaYoket(DosyaOkuma);
 
 #endif

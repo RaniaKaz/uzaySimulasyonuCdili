@@ -26,14 +26,18 @@ struct UZAYARACI{
     char* (*toString)(struct UZAYARACI*,void*);
 
 };
-typedef struct{
+typedef struct UZAYARACI* UzayAraci;
+typedef struct UzayAraciArrayList *uzayAraciArrayList;
+
+struct UzayAraciArrayList{
     struct UZAYARACI** uzayAraclari;
     int boyut;
     int kapasite;
-    void (*add)(uzayAraciArrayList*,struct UZAYARAC*);
-    void (*clear)(uzayAraciArrayList*);
-} uzayAraciArrayList;
-typedef struct UZAYARACI* UzayAraci;
+    void (*add)(struct UzayAraciArrayList*,struct UZAYARAC*);
+    void (*clear)(struct UzayAraciArrayList*);
+    void (*remove)(struct UzayAraciArrayList*,struct UZAYARAC*);
+};
+
 
 UzayAraci uzayAraciOlusturucu(char*,char*,char*,struct ZAMAN*,int);
 char* getIsim(const UzayAraci);
@@ -46,10 +50,10 @@ kisiArrayList hayattakiYolculariAl(const UzayAraci);
 int yoldaMi(const UzayAraci);
 int hedefeUlastiMi(const UzayAraci);
 int imhaMi(const UzayAraci);
-char* toString(const UzayAraci,void*);
+char* toString(const UzayAraci);
 void uzayAraciYoket(UzayAraci);
 
 //arrayliste ait fonksiyonlar
-void addToListUzayAraci(uzayAraciArrayList*,const UzayAraci);
-void clearListUzayAraci(uzayAraciArrayList*);
+void addToListUzayAraci(uzayAraciArrayList,const UzayAraci);
+void clearListUzayAraci(uzayAraciArrayList);
 #endif
