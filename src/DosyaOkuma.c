@@ -27,7 +27,7 @@ kisiArrayList kisileriOku(char* dosyaAdi){
 
         if(isim && yasStr && kalanOmurStr && uzayAraciAdi){
             Kisi kisi = kisiOlustur(isim, atoi(yasStr), atoi(kalanOmurStr), uzayAraciAdi); 
-            liste->addToListKisi(liste, kisi); //burada kaldım
+            liste->add(liste, kisi); //burada kaldım
         }
     }
     fclose(dosya);
@@ -56,18 +56,60 @@ gezegenArrayList gezegenleriOku(char* dosyaAdi){
         char* gununKacSaatStr = strtok(NULL, "#");
         char* tarihStr = strtok(NULL, "#");
 
-        char* gun=strtok(tarihStr, ".");
-        char* ay=strtok(NULL, ".");
-        char* yil=strtok(NULL, ".");
+        char* gunStr=strtok(tarihStr, ".");
+        char* ayStr=strtok(NULL, ".");
+        char* yilStr=strtok(NULL, ".");
 
-        Zaman tarih= zamanOlusturucu(gun,ay,yil);
+        Zaman tarih=zamanOlusturucu(atoi(gunStr),atoi(ayStr),atoi(yilStr));
         if(isim && gununKacSaatStr && tarihStr){
             Gezegen gezegen = gezegenOlusturucu(isim, atoi(gununKacSaatStr), tarih); 
-            addToListKisi(liste, kisi);
+            liste->add(liste, gezegen);
         }
     }
     fclose(dosya);
     return liste;
 }
-uzayAraciArrayList uzayAraclariniOku(const DosyaOkuma,char*);
-void dosyaOkumaYoket(DosyaOkuma);
+uzayAraciArrayList uzayAraclariniOku(char* dosyaAdi){
+    FILE* dosya = fopen(dosyaAdi, "r");
+    if(dosya==NULL){
+        printf("Dosya açilamadi");
+        return NULL;
+    }
+
+    uzayAraciArrayList liste;
+    liste->boyut = 0;
+    liste->kapasite = 10;
+    liste->uzayAraclari = malloc(liste->kapasite * sizeof(struct UZAYARACI*));
+
+    char satir[256]; //max line length
+
+    while(fgets(satir, sizeof(satir), dosya) != NULL){
+        //satir sonundaki \n karakterini sil
+        satir[strcspn(satir, "\n")] = 0;
+
+        char* isim= strtok(satir, "#");
+        char* cikisGezegeni = strtok(NULL, "#");
+        char* varisGezegeni = strtok(NULL, "#");
+        char* cikisTarihiStr = strtok(NULL, "#");
+        char* mesafeSaatStr = strtok(NULL, "#");
+
+        char* gunStr= strtok(cikisTarihiStr, ".");
+        char* ayStr= strtok(NULL, ".");
+        char* yilStr= strtok(NULL, ".");
+        Zaman tarih=zamanOlusturucu(atoi(gunStr),atoi(ayStr),atoi(yilStr));
+        if(isim && cikisGezegeni && varisGezegeni && cikisTarihiStr && mesafeSaatStr){
+            UzayAraci uzayAraci = uzayAraciOlusturucu(isim,cikisGezegeni, varisGezegeni,
+                tarih, atoi(mesafeSaatStr)); 
+            liste->add(liste, uzayAraci);
+        }
+    }
+    fclose(dosya);
+    return liste;
+}
+
+void dosyaOkumaYoket(DosyaOkuma this){
+    if(this==NULL)
+        return;
+    
+    free(this);
+}

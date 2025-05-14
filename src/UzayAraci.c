@@ -10,8 +10,9 @@ UzayAraci uzayAraciOlusturucu(char* isim ,char* cikisGezegeni,char* varisGezegen
     this->mesafeSaat=mesafeSaat;
     this->kalanSaat=mesafeSaat;
     this->hedefeVaracagiTarih="";
-
-    this->yolcular->boyut=0;
+    this->varacagiTarihiHesapla=&varacagiTarihiHesapla;
+    this->yoket=&uzayAraciYoket;
+    this->yolcular->boyut=0; // bence arraylist ayri olmalı
     this->yolcular->kapasite=10;
     this->yolcular->kisiler=(struct KISI**)malloc(sizeof(struct KISI*)*this->yolcular->kapasite);
     this->yolcular->clear=&clearListKisi;
@@ -90,6 +91,11 @@ int hedefeUlastiMi(const UzayAraci this){
 
 int imhaMi(const UzayAraci this){
     return this->imha;
+}
+
+void varacagiTarihiHesapla(const UzayAraci this,int gezegeninGunSaat){
+    Zaman hedefeVaracagiTarih= this->cikisTarihi->saatAlTarihiHesapla(this->cikisTarihi,this->mesafeSaat,gezegeninGunSaat);
+    this->hedefeVaracagiTarih= hedefeVaracagiTarih->toString(hedefeVaracagiTarih);
 }
 
 char* toString(const UzayAraci this){

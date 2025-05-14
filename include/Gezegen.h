@@ -14,9 +14,9 @@ struct GEZEGEN{
     Zaman (*getTarih)(struct GEZEGEN*);
     kisiArrayList (*getNufus)(struct GEZEGEN*);
     void (*birSaatGecir)(struct GEZEGEN*);
-    void (*aractakiYolculariEkle)(struct GEZEGEN*, Kisi);//kisi yerine uzay araci
-    void (*aractakiYolculariSil)(struct GEZEGEN*, Kisi);//kisi yerine uzay araci
-    void (*nufusuGuncelle)(struct GEZEGEN*); //yolda olan araçlarındaki yolculari nufüstan sil
+    void (*aractakiYolculariEkle)(struct GEZEGEN*, UzayAraci);//kisi yerine uzay araci
+    void (*aractakiYolculariSil)(struct GEZEGEN*, UzayAraci);//kisi yerine uzay araci
+    void (*nufusuGuncelle)(struct GEZEGEN*,uzayAraciArrayList); //yolda olan araçlarındaki yolculari nufüstan sil
     void (*yoket)(struct GEZEGEN*);
 };
 
@@ -38,9 +38,9 @@ int getGununSaatSayisi(const Gezegen);
 Zaman getTarih(const Gezegen);
 kisiArrayList getNufus(const Gezegen);
 void birSaatGecir(const Gezegen);
-void aractakiYolculariEkle(const Gezegen,UzayAraci);//kisi yerine uzay araci
-void aractakiYolculariSil(const Gezegen,UzayAraci);//kisi yerine uzay araci
-void nufusuGuncelle(const Gezegen);
+void aractakiYolculariEkle(const Gezegen,UzayAraci);
+void aractakiYolculariSil(const Gezegen,UzayAraci);
+void nufusuGuncelle(const Gezegen,uzayAraciArrayList);//javada parametresiz
 void gezegenYoket(Gezegen);
 
 //arrayliste ait fonksiyonlar
