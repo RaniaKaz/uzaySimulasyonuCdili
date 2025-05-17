@@ -1,7 +1,19 @@
 #include "DosyaOkuma.h"
 #include <string.h>
 #include <stdio.h>
-#include "Kisi.h"
+#include "KisiArrayList.h"
+#include "GezegenArrayList.h"
+#include "UzayAraciArrayList.h"
+
+DosyaOkuma dosyaOkumaOlusturucu(){
+    DosyaOkuma this;
+    this=(DosyaOkuma)malloc(sizeof(struct DOSYAOKUMA));
+    this->gezegenleriOku=&gezegenleriOku;
+    this->kisileriOku=&kisileriOku;
+    this->uzayAraclariniOku=&uzayAraclariniOku;
+    this->yoket=&dosyaOkumaYoket;
+    return this;
+}
 kisiArrayList kisileriOku(char* dosyaAdi){
     FILE* dosya = fopen(dosyaAdi, "r");
     if(dosya==NULL){
@@ -9,10 +21,7 @@ kisiArrayList kisileriOku(char* dosyaAdi){
         return NULL;
     }
 
-    kisiArrayList liste;
-    liste->boyut = 0;
-    liste->kapasite = 10;
-    liste->kisiler = malloc(liste->kapasite * sizeof(struct KISI*));
+    kisiArrayList liste = kisiArrayListOlusturucu();
 
     char satir[256]; //max line length
 
@@ -41,10 +50,7 @@ gezegenArrayList gezegenleriOku(char* dosyaAdi){
         return NULL;
     }
 
-    gezegenArrayList liste;
-    liste->boyut = 0;
-    liste->kapasite = 10;
-    liste->gezegenler = malloc(liste->kapasite * sizeof(struct GEZEGEN*));
+    gezegenArrayList liste = gezegenArrayListOlusturucu();
 
     char satir[256]; //max line length
 
@@ -76,10 +82,7 @@ uzayAraciArrayList uzayAraclariniOku(char* dosyaAdi){
         return NULL;
     }
 
-    uzayAraciArrayList liste;
-    liste->boyut = 0;
-    liste->kapasite = 10;
-    liste->uzayAraclari = malloc(liste->kapasite * sizeof(struct UZAYARACI*));
+    uzayAraciArrayList liste = uzayAraciArrayListOlusturucu();
 
     char satir[256]; //max line length
 

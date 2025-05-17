@@ -8,6 +8,13 @@ struct ZAMAN* zamanOlusturucu(int gun,int ay,int yil){
     this->ay=ay;
     this->yil=yil;
     this->saat=0;
+    this->getSaat = &getSaat;
+    this->birSaatIlerle = &birSaatIlerle;
+    this->saatAlTarihiHesapla = &saatAlTarihiHesapla;
+    this->esitMi = &esitMi;
+    this->toString = &toString;
+    this->yoket = &zamanYoket;
+    return this;
 }
 
 int getSaat(const Zaman this){
@@ -56,13 +63,9 @@ int esitMi(const Zaman this,const Zaman digerZaman){
 }
 
 char* toString(const Zaman this){
-    int toplamUzunluk=36;
-    toplamUzunluk+=strlen(this->gun);
-    toplamUzunluk+=strlen(this->ay);
-    toplamUzunluk+=strlen(this->yil);
-
-    char* str=(char*)malloc(sizeof(char)* toplamUzunluk);//char 1 byte 1*toplamUzunluk kadar yer açıyoruz
-    sprintf(str, "%d.%d.%d", this->gun, this->ay, this->yil);
+    
+    char* str = (char*)malloc(sizeof(char) * 20); // 20 yeterli: "dd.mm.yyyy\0"
+    sprintf(str, "%02d.%02d.%04d", this->gun, this->ay, this->yil);
     return str;
 }
 

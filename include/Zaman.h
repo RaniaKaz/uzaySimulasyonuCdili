@@ -1,6 +1,6 @@
 #ifndef ZAMAN_H
 #define ZAMAN_H
-
+#include <stdlib.h>
 struct ZAMAN {
     int gun;
     int ay;

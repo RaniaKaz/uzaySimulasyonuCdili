@@ -5,13 +5,14 @@
 #include "UzayAraci.h"
 
 struct DOSYAOKUMA{
-    kisiArrayList (*kisileriOku)(struct DOSYAOKYMA*,char*);
-    gezegenArrayList (*gezegenleriOku)(struct DOSYAOKYMA*,char*);
-    uzayAraciArrayList (*uzayAraclariniOku)(struct DOSYAOKYMA*,char*);
+    kisiArrayList (*kisileriOku)(char*);
+    gezegenArrayList (*gezegenleriOku)(char*);
+    uzayAraciArrayList (*uzayAraclariniOku)(char*);
     void (*yoket)(struct DOSYAOKUMA*);
 };
 typedef struct DOSYAOKUMA* DosyaOkuma;
 
+DosyaOkuma dosyaOkumaOlusturucu();
 kisiArrayList kisileriOku(char*);
 gezegenArrayList gezegenleriOku(char*);
 uzayAraciArrayList uzayAraclariniOku(char*);

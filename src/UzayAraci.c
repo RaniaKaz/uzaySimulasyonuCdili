@@ -6,25 +6,30 @@ UzayAraci uzayAraciOlusturucu(char* isim ,char* cikisGezegeni,char* varisGezegen
     this->isim=isim;
     this->cikisGezegeni=cikisGezegeni;
     this->varisGezegeni=varisGezegeni;
+    this->hedefeVaracagiTarih="";
     this->cikisTarihi=cikisTarihi;
     this->mesafeSaat=mesafeSaat;
     this->kalanSaat=mesafeSaat;
-    this->hedefeVaracagiTarih="";
-    this->varacagiTarihiHesapla=&varacagiTarihiHesapla;
-    this->yoket=&uzayAraciYoket;
-    this->yolcular->boyut=0; // bence arraylist ayri olmalı
-    this->yolcular->kapasite=10;
-    this->yolcular->kisiler=(struct KISI**)malloc(sizeof(struct KISI*)*this->yolcular->kapasite);
-    this->yolcular->clear=&clearListKisi;
-    this->yolcular->add=&addToListKisi;
-    this->yolcular->removeAll=&removeAllListKisi;
-    this->yolcular->removeAndFreeAt=&removeAndFreeAtListKisi;
-
-    this->imha=FALSE;
     this->yolda=FALSE;
+    this->imha=FALSE;
+    this->yolcular=kisiArrayListOlusturucu();
+    this->getIsim=&getIsimUzayAraci;
+    this->getCikisGezegeni=&getCikisGezegeni;
+    this->getVarisGezegeni=&getVarisGezegeni;
+    this->birSaatGecir=&birSaatGecirUzayAraci;
+    this->yolcuEkle=&yolcuEkle;
+    this->yolculariGuncelle=&yolculariGuncelle;
+    this->hayattakiYolculariAl=&hayattakiYolculariAl;
+    this->yoldaMi=&yoldaMi;
+    this->hedefeUlastiMi=&hedefeUlastiMi;
+    this->imhaMi=&imhaMi;
+    this->varacagiTarihiHesapla=&varacagiTarihiHesapla;
+    this->toString=&toStringUzayAraci;
+    this->yoket=&uzayAraciYoket;
+    return this;
 }
 
-char* getIsim(const UzayAraci this){
+char* getIsimUzayAraci(const UzayAraci this){
     return this->isim;
 }
 
@@ -36,7 +41,7 @@ char* getVarisGezegeni(const UzayAraci this){
     return this->varisGezegeni;
 }
 
-void birSaatGecir(const UzayAraci this ,struct ZAMAN* simdikiZaman){
+void birSaatGecirUzayAraci(const UzayAraci this ,struct ZAMAN* simdikiZaman){
     if(!(this->yolda) && simdikiZaman->esitMi(simdikiZaman,this->cikisTarihi)){
         this->yolda=TRUE;
     }
@@ -53,26 +58,23 @@ void yolcuEkle(const UzayAraci this,struct KISI* kisi){
 }
 
 void yolculariGuncelle(const UzayAraci this){
+    boolean hayattaVar=FALSE; 
     for(int i=0; i<this->yolcular->boyut; i++){
-        this->yolcular->kisiler[i]->birSaatGecir(this->yolcular->kisiler[i]);
-    }
-
-    boolean hayattaVar=FALSE;    
-
-    for(int i=0; i<this->yolcular->boyut; i++){
-        if(this->yolcular->kisiler[i]->hayattaMi(this->yolcular->kisiler[i])){
-            hayattaVar=TRUE;
-            break;
+        if(this->yolcular->kisiler[i]!=NULL){
+            this->yolcular->kisiler[i]->birSaatGecir(this->yolcular->kisiler[i]);
+                if(this->yolcular->kisiler[i]->hayattaMi(this->yolcular->kisiler[i])){
+                hayattaVar=TRUE;
+                
+            }
         }
+
     }
     this->imha= (hayattaVar ==FALSE ) ? TRUE : FALSE;
 }
 
 kisiArrayList hayattakiYolculariAl(const UzayAraci this){
-    kisiArrayList hayattakiler;
-    hayattakiler->boyut=0;
-    hayattakiler->kapasite=10;
-    hayattakiler->kisiler=(struct KISI**)malloc(sizeof(struct KISI)* hayattakiler->kapasite);
+    kisiArrayList hayattakiler=kisiArrayListOlusturucu();
+
     for(int i=0; i<this->yolcular->boyut; i++){
         if(this->yolcular->kisiler[i]->hayattaMi(this->yolcular->kisiler[i])){
             hayattakiler->add(hayattakiler,this->yolcular->kisiler[i]);
@@ -85,7 +87,7 @@ int yoldaMi(const UzayAraci this){
     return this->yolda;
 }
 
-int hedefeUlastiMi(const UzayAraci this){
+boolean hedefeUlastiMi(const UzayAraci this){
     return this->kalanSaat<=0;
 }
 
@@ -98,7 +100,7 @@ void varacagiTarihiHesapla(const UzayAraci this,int gezegeninGunSaat){
     this->hedefeVaracagiTarih= hedefeVaracagiTarih->toString(hedefeVaracagiTarih);
 }
 
-char* toString(const UzayAraci this){
+char* toStringUzayAraci(const UzayAraci this){
     char* yolDurumu;
     int toplamUzunluk=36;
     toplamUzunluk+=strlen(this->isim);
@@ -113,11 +115,11 @@ char* toString(const UzayAraci this){
             return str;
     }
     else{
-        if(this->hedefeUlastiMi){
+        if(this->hedefeUlastiMi(this)){
             yolDurumu="Vardi";
             toplamUzunluk+=strlen(yolDurumu);
         }
-        else if(this->yolda){
+        else if(this->yoldaMi(this)){
             yolDurumu="Yolda";
             toplamUzunluk+=strlen(yolDurumu);
         }
@@ -127,7 +129,7 @@ char* toString(const UzayAraci this){
         }
 
         char* str=(char*)malloc(sizeof(char)*toplamUzunluk);
-        sprintf(str, "%-25s %-25s %-25s %-25s %-25s %-25s", this->isim, 
+        sprintf(str, "%-25s %-25s %-25s %-25s %-25d %-25s", this->isim, 
             yolDurumu,this->cikisGezegeni,this->varisGezegeni,this->kalanSaat,this->hedefeVaracagiTarih);
             return str;
     }
@@ -136,42 +138,15 @@ char* toString(const UzayAraci this){
 void uzayAraciYoket(UzayAraci this){
     if(this->yolcular!=NULL){
         for(int i=0; i < this->yolcular->boyut; i++){
-            if(this->yolcular->kisiler[i]!=NULL){ //arrraylistteki yoket fonksyonları kullan
-                free(this->yolcular->kisiler[i]);
+            if(this->yolcular->kisiler[i]!=NULL){
+                this->yolcular->kisiler[i]->yoket(this->yolcular->kisiler[i]);
             }
         }
         free(this->yolcular->kisiler);
         free(this->yolcular);
     }
 
-    if(this->isim!=NULL)
-        free(this->isim);
-    if(this->cikisGezegeni!=NULL)
-        free(this->cikisGezegeni);
-    if(this->varisGezegeni!=NULL)
-        free(this->varisGezegeni);
-    if(this->cikisTarihi!=NULL)
-        free(this->cikisTarihi);
     free(this);
 }
 
 //arrayliste ait fonksiyonlar
-void addToListUzayAraci(uzayAraciArrayList list,const UzayAraci yeniArac){
-    if(list->boyut==list->kapasite){
-        list->kapasite*=2;
-        list->uzayAraclari=(UzayAraci*)realloc(list->uzayAraclari, sizeof(UzayAraci)*list->kapasite);
-    }
-    list->uzayAraclari[list->boyut++]=yeniArac;
-}
-
-void clearListUzayAraci(uzayAraciArrayList list){
-    for(int i=0; i< list->boyut; i++){
-        if(list->uzayAraclari[i]!=NULL){
-            uzayAraciYoket(list->uzayAraclari[i]);
-        }
-    }
-    free(list->uzayAraclari);
-    list->uzayAraclari=NULL;
-    list->boyut=0;
-    list->kapasite=0;
-}
