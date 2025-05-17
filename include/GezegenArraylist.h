@@ -13,7 +13,7 @@ struct GezegenArrayList{
 
 typedef struct GezegenArrayList* gezegenArrayList;
 
-gezegenArrayList gezegenArrayListOlusturuxu();
+gezegenArrayList gezegenArrayListOlusturucu();
 void addToListGezegen(gezegenArrayList, Gezegen);
 void addAllToListGezegen(gezegenArrayList,  gezegenArrayList);
 void clearListGezegen(gezegenArrayList);

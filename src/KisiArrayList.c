@@ -7,7 +7,7 @@ kisiArrayList kisiArrayListOlusturucu(){
     list->kapasite = 10;
     list->kisiler = malloc(sizeof(Kisi) * list->kapasite);
     list->add = &addToListKisi;
-    list->addAll = &addAllToListKisi;
+    list->addAll=&addAllToListKisi;
     list->clear = &clearListKisi;
     list->removeAll = &removeAllListKisi;
     list->removeAndFreeAt = &removeAndFreeAtListKisi;
@@ -22,7 +22,7 @@ void addToListKisi(kisiArrayList list,Kisi yeniKisi){
     list->kisiler[list->boyut++]=yeniKisi;
 }
 
-void addAllToListKisi(kisiArrayList kaynak, const kisiArrayList hedef){
+void addAllToListKisi(kisiArrayList kaynak, kisiArrayList hedef){
     for (int i=0; i<kaynak->boyut; i++){
         if(hedef->boyut==hedef->kapasite){
             hedef->kapasite*=2;

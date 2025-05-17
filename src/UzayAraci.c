@@ -6,7 +6,7 @@ UzayAraci uzayAraciOlusturucu(char* isim ,char* cikisGezegeni,char* varisGezegen
     this->isim=isim;
     this->cikisGezegeni=cikisGezegeni;
     this->varisGezegeni=varisGezegeni;
-    this->hedefeVaracagiTarih="";
+    this->hedefeVaracagiTarih=NULL;
     this->cikisTarihi=cikisTarihi;
     this->mesafeSaat=mesafeSaat;
     this->kalanSaat=mesafeSaat;
@@ -58,7 +58,7 @@ void yolcuEkle(const UzayAraci this,struct KISI* kisi){
 }
 
 void yolculariGuncelle(const UzayAraci this){
-    boolean hayattaVar=FALSE; 
+    Boolean hayattaVar=FALSE; 
     for(int i=0; i<this->yolcular->boyut; i++){
         if(this->yolcular->kisiler[i]!=NULL){
             this->yolcular->kisiler[i]->birSaatGecir(this->yolcular->kisiler[i]);
@@ -87,7 +87,7 @@ int yoldaMi(const UzayAraci this){
     return this->yolda;
 }
 
-boolean hedefeUlastiMi(const UzayAraci this){
+Boolean hedefeUlastiMi(const UzayAraci this){
     return this->kalanSaat<=0;
 }
 
@@ -96,18 +96,83 @@ int imhaMi(const UzayAraci this){
 }
 
 void varacagiTarihiHesapla(const UzayAraci this,int gezegeninGunSaat){
+    if (this->hedefeVaracagiTarih != NULL) {
+        free(this->hedefeVaracagiTarih);
+    }
     Zaman hedefeVaracagiTarih= this->cikisTarihi->saatAlTarihiHesapla(this->cikisTarihi,this->mesafeSaat,gezegeninGunSaat);
-    this->hedefeVaracagiTarih= hedefeVaracagiTarih->toString(hedefeVaracagiTarih);
+    char* tarihStr = hedefeVaracagiTarih->toString(hedefeVaracagiTarih);
+    this->hedefeVaracagiTarih = strdup(tarihStr);
+    //this->hedefeVaracagiTarih= hedefeVaracagiTarih->toString(hedefeVaracagiTarih);
 }
 
-char* toStringUzayAraci(const UzayAraci this){
+char* toStringUzayAraci(const UzayAraci this) {
+    char* yolDurumu;
+    char kalanSaatStr[25];
+    char* tarihGosterim;
+    
+    // Buffer için yeterli alan ayýr
+    char* str = (char*)malloc(sizeof(char) * 200);
+    if (str == NULL) {
+        return NULL; // Bellek hatasý durumunda NULL dön
+    }
+    
+    if (this->imha) {
+        yolDurumu = "IMHA";
+        sprintf(str, "%-25s %-25s %-25s %-25s %-25s %-25s", 
+                this->isim, yolDurumu, this->cikisGezegeni, 
+                this->varisGezegeni, "--", "--");
+    } else {
+        if (this->hedefeUlastiMi(this)) {
+            yolDurumu = "Vardi";
+        } else if (this->yoldaMi(this)) {
+            yolDurumu = "Yolda";
+        } else {
+            yolDurumu = "Bekliyor";
+        }
+        
+        sprintf(kalanSaatStr, "%d", this->kalanSaat);
+        
+        // Eðer hedefeVaracagiTarih NULL ise güvenli bir alternatif kullan
+        tarihGosterim = (this->hedefeVaracagiTarih != NULL) ? 
+                         this->hedefeVaracagiTarih : "--";
+        
+        sprintf(str, "%-25s %-25s %-25s %-25s %-25s %-25s", 
+                this->isim, yolDurumu, this->cikisGezegeni, 
+                this->varisGezegeni, kalanSaatStr, tarihGosterim);
+    }
+    
+    return str;
+}
+
+void uzayAraciYoket(UzayAraci this) {
+    if (this == NULL) return;
+    
+    if (this->yolcular != NULL) {
+        for (int i = 0; i < this->yolcular->boyut; i++) {
+            if (this->yolcular->kisiler[i] != NULL) {
+                this->yolcular->kisiler[i]->yoket(this->yolcular->kisiler[i]);
+            }
+        }
+        free(this->yolcular->kisiler);
+        free(this->yolcular);
+    }
+    
+    if (this->isim != NULL) free(this->isim);
+    if (this->cikisGezegeni != NULL) free(this->cikisGezegeni);
+    if (this->varisGezegeni != NULL) free(this->varisGezegeni);
+    if (this->hedefeVaracagiTarih != NULL) free(this->hedefeVaracagiTarih);
+    
+    free(this);
+}
+/*char* toStringUzayAraci(const UzayAraci this){
+
     char* yolDurumu;
     int toplamUzunluk=36;
     toplamUzunluk+=strlen(this->isim);
     toplamUzunluk+=strlen(this->cikisGezegeni);
     toplamUzunluk+=strlen(this->varisGezegeni);
     if(this->imha){
-        yolDurumu="Ä°MHA";
+        yolDurumu="IMHA";
         toplamUzunluk+=strlen(yolDurumu);
         char* str=(char*)malloc(sizeof(char)*toplamUzunluk);
         sprintf(str, "%-25s %-25s %-25s %-25s %-25s %-25s", this->isim, 
@@ -134,8 +199,8 @@ char* toStringUzayAraci(const UzayAraci this){
             return str;
     }
 
-}
-void uzayAraciYoket(UzayAraci this){
+}*/
+/*void uzayAraciYoket(UzayAraci this){
     if(this->yolcular!=NULL){
         for(int i=0; i < this->yolcular->boyut; i++){
             if(this->yolcular->kisiler[i]!=NULL){
@@ -145,8 +210,10 @@ void uzayAraciYoket(UzayAraci this){
         free(this->yolcular->kisiler);
         free(this->yolcular);
     }
-
+    free(this->isim);
+    free(this->cikisGezegeni);
+    free(this->varisGezegeni);
     free(this);
-}
+}*/
 
 //arrayliste ait fonksiyonlar

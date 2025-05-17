@@ -1,15 +1,14 @@
 #include "Simulasyon.h"
-#include <string.h>   // strcmp için
-
+#include <windows.h>
 Simulasyon simulasyonOlusturucu(){
     Simulasyon this;
     this=(Simulasyon)malloc(sizeof(struct SIMULASYON));
-    DosyaOkuma dosyaOkuma = dosyaOkumaOlusturucu();
-    this->kisiler =dosyaOkuma->kisileriOku("kisiler.txt");
-    this->gezegenler = dosyaOkuma->gezegenleriOku("gezegenler.txt");
-    this->uzayAraclari = dosyaOkuma->uzayAraclariniOku("uzayAraclari.txt");
+    this->dosyaOkuma = dosyaOkumaOlusturucu();
+    this->kisiler =this->dosyaOkuma->kisileriOku(this->dosyaOkuma,"./src/kisiler.txt");
+    this->gezegenler = this->dosyaOkuma->gezegenleriOku(this->dosyaOkuma,"./src/gezegenler.txt");
+    this->uzayAraclari = this->dosyaOkuma->uzayAraclariniOku(this->dosyaOkuma,"./src/uzayAraclar.txt");
     this->baslat = &baslat;
-    this->birSaatIlerle = &birSaatIlerle;
+    this->birSaatIlerle = &birSaatIlerleSimulasyon;
     this->ekranGuncelle = &ekranGuncelle;
     this->gezegenBul = &gezegenBul;
     this->tumAraclarVardiMi = &tumAraclarVardiMi;
@@ -25,6 +24,7 @@ Simulasyon simulasyonOlusturucu(){
             uzayAraci=this->uzayAraclari->uzayAraclari[j];
             if(strcmp(uzayAraci->getIsim(uzayAraci), kisi->getUzayAraciAdi(kisi)) == 0){
                 uzayAraci->yolcuEkle(uzayAraci,kisi);
+                //printf("yolcu  %d eklendi",i); bu tamam
                 break;
             }
         }
@@ -35,40 +35,48 @@ Simulasyon simulasyonOlusturucu(){
         for(int j=0; j<this->uzayAraclari->boyut; j++){
             uzayAraci=this->uzayAraclari->uzayAraclari[j];  
             if(strcmp(uzayAraci->getCikisGezegeni(uzayAraci),gezegen->getIsim(gezegen))==0){
+                //printf(" aracraki yolcu  %d eklendi",i); tamam
                 gezegen->aractakiYolculariEkle(gezegen, uzayAraci);
+
             }
             
             if(strcmp(uzayAraci->getVarisGezegeni(uzayAraci),gezegen->getIsim(gezegen))==0){
                 uzayAraci->varacagiTarihiHesapla(uzayAraci,gezegen->getGununSaatSayisi(gezegen));
+                //printf("varacagi tarih toplandi  %d ",j); tamaam
             }
         }
     }
+        return this;
 }
-void baslat(const Simulasyon this){
+void baslat(Simulasyon this){
     int saat=0;
     while(!this->tumAraclarVardiMi(this)){
         this->birSaatIlerle(this);
-        this->ekranGuncelle(saat);
+        this->ekranGuncelle(this,saat);
+
         this->bekle(500);
+
         saat++;
     }
-    this->ekranGuncelle(saat);
+    this->ekranGuncelle(this,saat);
 }
-void birSaatIlerle(const Simulasyon this){
+void birSaatIlerleSimulasyon(const Simulasyon this){
     for(int i=0; i<this->gezegenler->boyut; i++){
         Gezegen gezegen = this->gezegenler->gezegenler[i];
         gezegen->birSaatGecir(gezegen);
         gezegen->nufusuGuncelle(gezegen);
+        //printf("gezegen->nufusuGuncelle(gezegen); calisti");
     }
     for(int i=0; i<this->uzayAraclari->boyut; i++){
         UzayAraci uzayAraci = this->uzayAraclari->uzayAraclari[i];
-        uzayAraci->birSaatGecir(uzayAraci,this->gezegenZamani(uzayAraci,uzayAraci->getCikisGezegeni(uzayAraci)));
+        uzayAraci->birSaatGecir(uzayAraci,this->gezegenZamani(this,uzayAraci->getCikisGezegeni(uzayAraci)));
+        //printf(" -kontrol- ");
     }
     for(int i=0; i<this->gezegenler->boyut;i++){
         Gezegen gezegen = this->gezegenler->gezegenler[i];
         for(int j=0; j< this->uzayAraclari->boyut; j++){
             UzayAraci uzayAraci= this->uzayAraclari->uzayAraclari[j];
-            if(uzayAraci->hedefeUlastiMi(uzayAraci) && strcmp(uzayAraci->getVarisGezegeni,gezegen->getIsim(gezegen)) == 0){
+            if(uzayAraci->hedefeUlastiMi(uzayAraci) && strcmp(uzayAraci->getVarisGezegeni(uzayAraci),gezegen->getIsim(gezegen)) == 0){
                 gezegen->aractakiYolculariEkle(gezegen, uzayAraci);
             }
         }
@@ -76,58 +84,75 @@ void birSaatIlerle(const Simulasyon this){
 }
 
 void ekranGuncelle(const Simulasyon this, int saat){
-    #ifdef _WIN32
-        system("cls");
-    #else
-        system("clear");
-    #endif
+   // system("cls");
 
     printf("gezegenler : %d\n", saat);
     printf("%-25s", "");
     for(int i=0; i<this->gezegenler->boyut; i++){
         Gezegen gezegen = this->gezegenler->gezegenler[i];
-        printf("%-25s---%s---",gezegen->getIsim(gezegen));
+        char buffer[256];
+        snprintf(buffer, sizeof(buffer), "---%s---", gezegen->getIsim(gezegen));
+        printf("%-25s", buffer);
     }
 
     printf("\n");
     printf("%-25s", "Tarih :");
         for(int i=0; i<this->gezegenler->boyut; i++){
-        Gezegen gezegen = this->gezegenler->gezegenler[i];
-        printf("%-25s---%s---",gezegen->getTarih(gezegen));
-    }
-
+            Gezegen gezegen = this->gezegenler->gezegenler[i];
+            char* tarihStr = gezegen->getTarih(gezegen)->toString(gezegen->getTarih(gezegen));
+            printf("%-25s", tarihStr);
+            free(tarihStr);
+        //printf("%-25s",gezegen->getTarih(gezegen)->toString(gezegen->getTarih(gezegen)));
+        }
+    //printf(" -kontrol- "); tamam
     printf("\n");
-    printf("%-25s", "Nüfüs :");
+    printf("%-25s", "Nufus :");
     for(int i=0; i<this->gezegenler->boyut; i++){
         Gezegen gezegen = this->gezegenler->gezegenler[i];
-        printf("%-25s---%d---",gezegen->getNufus(gezegen)->boyut); //düzeltilmeli galiba 
+        printf("%-25d",gezegen->getNufus(gezegen)->boyut); //düzeltilmeli galiba 
     }
 
-    printf("\n\n\nUzay Araçları :\n");
-    printf("%-25s %-25s %-25s %-25s %-25s %-25s","Araç Adı","Durum","Çıkış","Varış","Hedefe Kalan Saat","Hedefe Varacağı Tarih");
+    printf("\n\n\nUzay Araclari :\n");
+    printf("%-25s %-25s %-25s %-25s %-25s %-25s","Arac Adi","Durum","Cikis","Varis","Hedefe Kalan Saat","Hedefe Varacagi Tarih");
     printf("\n");
-
+//varacagiTarihiHesapla
     for(int i=0; i < this->uzayAraclari->boyut; i++){
-        printf(this->uzayAraclari->uzayAraclari[i]->toString(this->uzayAraclari->uzayAraclari[i]));
-        printf("\n");
-    }
+        UzayAraci uzayAraci = this->uzayAraclari->uzayAraclari[i];
+        if (uzayAraci == NULL) {
+            printf("HATA: %d. uzay araci NULL!\n", i);
+            continue;
+        }
+
+        //printf(uzayAraci->toString(uzayAraci));
+        //printf("\n");
+                // toString'ten d�nen belle�i al, yazd�r, sonra serbest b�rak
+            char* str = uzayAraci->toString(uzayAraci);
+            if (str) {
+                printf("%s\n", str);
+                free(str); // Belle�i serbest b�rak!
+            } else {
+                printf("HATA: %d. uzay araci toString NULL!\n", i);
+            }
+
+        }
 }
 
 Zaman gezegenZamani(const Simulasyon this, char* ad){
-    return this->gezegenBul(this,ad)->getTarih(gezegenBul(this,ad));
+    Gezegen g=this->gezegenBul(this,ad);
+    return g->getTarih(g);
 }
 
 Gezegen gezegenBul(const Simulasyon this , char* ad){
     for(int i=0; i < this->gezegenler->boyut; i++){
         Gezegen gezegen =this->gezegenler->gezegenler[i];
         
-        if(strcmp(gezegen->getIsim,ad)==0)
+        if(strcmp(gezegen->getIsim(gezegen),ad)==0)
             return gezegen;
     }
     return NULL;
 }
 
-boolean tumAraclarVardiMi(const Simulasyon this){
+Boolean tumAraclarVardiMi(const Simulasyon this){
     for(int i=0; i < this->uzayAraclari->boyut; i++){
         UzayAraci uzayAraci=this->uzayAraclari->uzayAraclari[i];
         if(!uzayAraci->imhaMi(uzayAraci) && !uzayAraci->hedefeUlastiMi(uzayAraci))
@@ -135,11 +160,7 @@ boolean tumAraclarVardiMi(const Simulasyon this){
     }
     return TRUE;
 }
-#ifdef _WIN32
-    #include <windows.h>
-#else
-    #include <unistd.h>
-#endif
+
 void bekle(int ms){
     Sleep(ms);
 }
@@ -149,5 +170,6 @@ void yoketSimulasyon(Simulasyon this){
    this->kisiler->yoket(this->kisiler);
    this->gezegenler->yoket(this->gezegenler);
    this->uzayAraclari->yoket(this->uzayAraclari);
+   this->dosyaOkuma->yoket(this->dosyaOkuma);
    free(this);
 }

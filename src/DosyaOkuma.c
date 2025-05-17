@@ -1,9 +1,4 @@
 #include "DosyaOkuma.h"
-#include <string.h>
-#include <stdio.h>
-#include "KisiArrayList.h"
-#include "GezegenArrayList.h"
-#include "UzayAraciArrayList.h"
 
 DosyaOkuma dosyaOkumaOlusturucu(){
     DosyaOkuma this;
@@ -14,14 +9,19 @@ DosyaOkuma dosyaOkumaOlusturucu(){
     this->yoket=&dosyaOkumaYoket;
     return this;
 }
-kisiArrayList kisileriOku(char* dosyaAdi){
+kisiArrayList kisileriOku(DosyaOkuma this,char* dosyaAdi){
     FILE* dosya = fopen(dosyaAdi, "r");
+    if(!dosya){
+    printf("kisiler.txt a calisildi ama basarisiz oldu!\n");
+    perror("fopen hatasi");
+    exit(EXIT_FAILURE);
+    }
     if(dosya==NULL){
-        printf("Dosya açilamadi");
+        printf("Dosya acilamadi");
         return NULL;
     }
 
-    kisiArrayList liste = kisiArrayListOlusturucu();
+    this->kisiListesi =kisiArrayListOlusturucu();
 
     char satir[256]; //max line length
 
@@ -35,22 +35,22 @@ kisiArrayList kisileriOku(char* dosyaAdi){
         char* uzayAraciAdi = strtok(NULL, "#");
 
         if(isim && yasStr && kalanOmurStr && uzayAraciAdi){
-            Kisi kisi = kisiOlustur(isim, atoi(yasStr), atoi(kalanOmurStr), uzayAraciAdi); 
-            liste->add(liste, kisi); //burada kaldım
+            Kisi kisi = kisiOlusturucu(strdup_safe(isim), atoi(yasStr), atoi(kalanOmurStr), strdup_safe(uzayAraciAdi)); 
+            this->kisiListesi->add(this->kisiListesi, kisi); 
         }
     }
     fclose(dosya);
-    return liste;
+    return this->kisiListesi;
 }
 
-gezegenArrayList gezegenleriOku(char* dosyaAdi){
+gezegenArrayList gezegenleriOku(DosyaOkuma this,char* dosyaAdi){
     FILE* dosya = fopen(dosyaAdi, "r");
     if(dosya==NULL){
-        printf("Dosya açilamadi");
+        printf("Dosya acilamadi");
         return NULL;
     }
 
-    gezegenArrayList liste = gezegenArrayListOlusturucu();
+    this->gezegenListesi = gezegenArrayListOlusturucu();
 
     char satir[256]; //max line length
 
@@ -68,21 +68,21 @@ gezegenArrayList gezegenleriOku(char* dosyaAdi){
 
         Zaman tarih=zamanOlusturucu(atoi(gunStr),atoi(ayStr),atoi(yilStr));
         if(isim && gununKacSaatStr && tarihStr){
-            Gezegen gezegen = gezegenOlusturucu(isim, atoi(gununKacSaatStr), tarih); 
-            liste->add(liste, gezegen);
+            Gezegen gezegen = gezegenOlusturucu(strdup_safe(isim), atoi(gununKacSaatStr), tarih); 
+            this->gezegenListesi->add(this->gezegenListesi, gezegen);
         }
     }
     fclose(dosya);
-    return liste;
+    return this->gezegenListesi;
 }
-uzayAraciArrayList uzayAraclariniOku(char* dosyaAdi){
+uzayAraciArrayList uzayAraclariniOku(DosyaOkuma this,char* dosyaAdi){
     FILE* dosya = fopen(dosyaAdi, "r");
     if(dosya==NULL){
-        printf("Dosya açilamadi");
+        printf("Dosya acilamadi");
         return NULL;
     }
 
-    uzayAraciArrayList liste = uzayAraciArrayListOlusturucu();
+    this->aracListesi = uzayAraciArrayListOlusturucu();
 
     char satir[256]; //max line length
 
@@ -101,18 +101,25 @@ uzayAraciArrayList uzayAraclariniOku(char* dosyaAdi){
         char* yilStr= strtok(NULL, ".");
         Zaman tarih=zamanOlusturucu(atoi(gunStr),atoi(ayStr),atoi(yilStr));
         if(isim && cikisGezegeni && varisGezegeni && cikisTarihiStr && mesafeSaatStr){
-            UzayAraci uzayAraci = uzayAraciOlusturucu(isim,cikisGezegeni, varisGezegeni,
+            UzayAraci uzayAraci = uzayAraciOlusturucu(strdup_safe(isim),strdup_safe(cikisGezegeni), strdup_safe(varisGezegeni),
                 tarih, atoi(mesafeSaatStr)); 
-            liste->add(liste, uzayAraci);
+            this->aracListesi->add(this->aracListesi, uzayAraci);
         }
     }
     fclose(dosya);
-    return liste;
+    return this->aracListesi;
 }
-
+char* strdup_safe(const char* src) {
+    if (!src) return NULL;
+    char* dst = (char*)malloc(strlen(src) + 1);
+    if (dst) strcpy(dst, src);
+    return dst;
+}
 void dosyaOkumaYoket(DosyaOkuma this){
     if(this==NULL)
         return;
-    
+    this->kisiListesi->yoket(this->kisiListesi);
+    this->gezegenListesi->yoket(this->gezegenListesi);
+    this->aracListesi->yoket(this->aracListesi);
     free(this);
 }

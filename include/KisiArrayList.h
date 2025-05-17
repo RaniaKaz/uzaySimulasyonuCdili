@@ -1,12 +1,12 @@
 #ifndef KISIARRAYLIST_H
-#define KISIARRAYLIST_h
+#define KISIARRAYLIST_H
 #include "Kisi.h"
 struct KisiArrayList{
     struct KISI** kisiler;
     int boyut;
     int kapasite;
     void (*add)(struct KisiArrayList*,Kisi);
-    void (*addAll)(struct KisiArrayList*,const struct KisiArrayList*);
+    void (*addAll)(struct KisiArrayList*,struct KisiArrayList*);
     void (*clear)(struct KisiArrayList*);
     void (*removeAll)(struct KisiArrayList*,struct KisiArrayList*);
     void (*removeAndFreeAt)(struct KisiArrayList*, int);
@@ -17,7 +17,7 @@ typedef struct KisiArrayList* kisiArrayList;
 
 kisiArrayList kisiArrayListOlusturucu();
 void addToListKisi(kisiArrayList,Kisi);
-void addAllToListKisi(kisiArrayList, const kisiArrayList);
+void addAllToListKisi(kisiArrayList,kisiArrayList);
 void clearListKisi(kisiArrayList);
 void removeAllListKisi(kisiArrayList,kisiArrayList);
 void removeAndFreeAtListKisi(kisiArrayList, int);

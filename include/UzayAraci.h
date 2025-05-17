@@ -1,7 +1,10 @@
 #ifndef UZAYARACI_H
 #define UZAYARACI_H
-#include "kisiArrayList.h"
+#include "KisiArrayList.h"
 #include "Zaman.h"
+#include <string.h>
+#include <stdio.h>
+#include <string.h>
 struct UZAYARACI{
     char* isim;
     char* cikisGezegeni;
@@ -21,7 +24,7 @@ struct UZAYARACI{
     void (*yolculariGuncelle)(struct UZAYARACI*);
     kisiArrayList (*hayattakiYolculariAl)(struct UZAYARACI*);
     int (*yoldaMi)(struct UZAYARACI*);
-    boolean (*hedefeUlastiMi)(struct UZAYARACI*);
+    Boolean (*hedefeUlastiMi)(struct UZAYARACI*);
     int (*imhaMi)(struct UZAYARACI*);
     void (*varacagiTarihiHesapla)(struct UZAYARACI*,int);
     char* (*toString)(struct UZAYARACI*);
@@ -38,12 +41,10 @@ void yolcuEkle(const UzayAraci,struct KISI*);
 void yolculariGuncelle(const UzayAraci);
 kisiArrayList hayattakiYolculariAl(const UzayAraci);
 int yoldaMi(const UzayAraci);
-boolean hedefeUlastiMi(const UzayAraci);
+Boolean hedefeUlastiMi(const UzayAraci);
 int imhaMi(const UzayAraci);
 void varacagiTarihiHesapla(const UzayAraci,int);
 char* toStringUzayAraci(const UzayAraci);
 void uzayAraciYoket(UzayAraci);
-
-//arrayliste ait fonksiyonlar
 
 #endif

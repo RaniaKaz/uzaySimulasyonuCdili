@@ -10,7 +10,7 @@ struct KISI{
     int hayatta;
     char* (*getUzayAraciAdi)(struct KISI*);
     void (*birSaatGecir)(struct KISI*);
-    boolean (*hayattaMi)(struct KISI*);
+    Boolean (*hayattaMi)(struct KISI*);
     void (*yoket)(struct KISI*);
 };
 
@@ -20,7 +20,7 @@ typedef struct KISI* Kisi;
 Kisi kisiOlusturucu(char*, int, int, char*);
 char* getUzayAraciAdi(const Kisi);
 void birSaatGecirKisi(const Kisi);
-boolean hayattaMi(const Kisi);
+Boolean hayattaMi(const Kisi);
 void kisiYoket(Kisi);
 
 //arrayliste ait fonksiyonlar

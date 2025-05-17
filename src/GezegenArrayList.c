@@ -22,7 +22,7 @@ void addAllToListGezegen(gezegenArrayList kaynak, gezegenArrayList hedef){
     for (int i=0; i<kaynak->boyut; i++){
         if(hedef->boyut==hedef->kapasite){
             hedef->kapasite*=2;
-            hedef->gezegenler=(Kisi*)realloc(hedef->gezegenler, sizeof(Kisi)*hedef->kapasite);
+            hedef->gezegenler=(Gezegen*)realloc(hedef->gezegenler, sizeof(Gezegen)*hedef->kapasite);
         }
         hedef->gezegenler[hedef->boyut++]=kaynak->gezegenler[i];
     }

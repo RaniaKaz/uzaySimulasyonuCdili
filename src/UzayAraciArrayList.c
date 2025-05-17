@@ -30,6 +30,18 @@ void clearListUzayAraci(uzayAraciArrayList list){
     list->uzayAraclari = (UzayAraci*)malloc(sizeof(UzayAraci) * list->kapasite);
 }
 
+void removeFromListUzayAraci(uzayAraciArrayList list ,UzayAraci arac){
+    for ( int i=0; i < list->boyut; i++){
+        if(list->uzayAraclari[i]==arac){
+            list->uzayAraclari[i]->yoket( list->uzayAraclari[i]);
+            for(int j=0; j < list->boyut; j++){
+                list->uzayAraclari[i]=list->uzayAraclari[i++];
+            }
+            list->boyut--;
+            return;
+        }
+    }
+}
 void yoketListUzayAraci (uzayAraciArrayList list) {
     if (list==NULL) return;
 

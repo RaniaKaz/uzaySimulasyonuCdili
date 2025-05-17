@@ -1,5 +1,4 @@
 #include "Kisi.h"
-#include <stdlib.h>
 
 Kisi kisiOlusturucu(char* isim, int yas, int kalanOmur, char* uzayAraciAdi){
     Kisi this;
@@ -31,13 +30,15 @@ void birSaatGecirKisi(const Kisi this){
 
 }
 
-boolean hayattaMi(const Kisi this){
+Boolean hayattaMi(const Kisi this){
     if(this==NULL) return FALSE;
     return this->hayatta;
 }
 
 void kisiYoket(Kisi this){
     if (this==NULL)return;
+    free(this->isim);
+    free(this->uzayAraciAdi);
     free(this);
 }
 

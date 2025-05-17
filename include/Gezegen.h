@@ -1,7 +1,7 @@
 #ifndef GEZEGEN_H
 #define GEZEGEN_H
-#include "kisiArrayList.h"
-#include "uzayAraciArrayList.h"
+#include "KisiArrayList.h"
+#include "UzayAraciArrayList.h"
 #include "Zaman.h"
 struct GEZEGEN{
     char* isim;
@@ -14,8 +14,8 @@ struct GEZEGEN{
     Zaman (*getTarih)(struct GEZEGEN*);
     kisiArrayList (*getNufus)(struct GEZEGEN*);
     void (*birSaatGecir)(struct GEZEGEN*);
-    void (*aractakiYolculariEkle)(struct GEZEGEN*, UzayAraci);//kisi yerine uzay araci
-    void (*aractakiYolculariSil)(struct GEZEGEN*, UzayAraci);//kisi yerine uzay araci
+    void (*aractakiYolculariEkle)(struct GEZEGEN*, struct UZAYARACI*);
+    void (*aractakiYolculariSil)(struct GEZEGEN*, struct UZAYARACI*);
     void (*nufusuGuncelle)(struct GEZEGEN*); //yolda olan araçlarındaki yolculari nufüstan sil
     void (*yoket)(struct GEZEGEN*);
 };
@@ -36,4 +36,4 @@ void gezegenYoket(Gezegen);
 
 //arrayliste ait fonksiyonlar
 
-#endif
+#endif // GEZEGEN_H

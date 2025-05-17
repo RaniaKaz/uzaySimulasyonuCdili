@@ -23,7 +23,6 @@ Gezegen gezegenOlusturucu(char* isim, int gununSaatSayisi, Zaman tarih){
     this->yoket=&gezegenYoket;
     return this;
 }
-
 char* getIsimGezegen(const Gezegen this){
     return this->isim;
 }
@@ -45,7 +44,7 @@ void birSaatGecirGezegen(const Gezegen this){
 
 void aractakiYolculariEkle(const Gezegen this,UzayAraci uzayAraci){
     this->araclar->add(this->araclar,uzayAraci);
-    this->nufus->addAll(uzayAraci->hayattakiYolculariAl(uzayAraci),this);
+    this->nufus->addAll(this->nufus,uzayAraci->hayattakiYolculariAl(uzayAraci));
 }
 void aractakiYolculariSil(const Gezegen this ,UzayAraci uzayAraci){
     this->araclar->remove(this->araclar,uzayAraci);
@@ -71,7 +70,7 @@ void nufusuGuncelle(const Gezegen this){
 }
 void gezegenYoket(Gezegen this){
     if(this==NULL) return;
-
+    free(this->isim);
     this->tarih->yoket(this->tarih);
 
     for(int i=0; i<this->nufus->boyut; i++){
