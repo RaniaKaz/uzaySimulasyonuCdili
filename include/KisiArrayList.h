@@ -1,6 +1,7 @@
 #ifndef KISIARRAYLIST_H
 #define KISIARRAYLIST_H
 #include "Kisi.h"
+#include <string.h>
 struct KisiArrayList{
     struct KISI** kisiler;
     int boyut;
@@ -16,6 +17,7 @@ struct KisiArrayList{
 typedef struct KisiArrayList* kisiArrayList;
 
 kisiArrayList kisiArrayListOlusturucu();
+char* strdup_safeK(const char*);
 void addToListKisi(kisiArrayList,Kisi);
 void addAllToListKisi(kisiArrayList,kisiArrayList);
 void clearListKisi(kisiArrayList);

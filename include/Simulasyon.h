@@ -16,7 +16,6 @@ struct SIMULASYON{
     Gezegen (*gezegenBul)(struct SIMULASYON*, char*);
     Boolean (*tumAraclarVardiMi)(struct SIMULASYON*);
     Zaman (*gezegenZamani)(struct SIMULASYON*, char*);
-    void (*bekle)(int);
     void (*yoket)(struct SIMULASYON*);
 };
 typedef struct SIMULASYON* Simulasyon;
@@ -28,6 +27,5 @@ void ekranGuncelle(const Simulasyon, int);
 Zaman gezegenZamani(const Simulasyon, char*);
 Gezegen gezegenBul(const Simulasyon, char*);
 Boolean tumAraclarVardiMi(const Simulasyon);
-void bekle(int);
 void yoketSimulasyon(Simulasyon);
 #endif

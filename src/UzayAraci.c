@@ -98,10 +98,14 @@ int imhaMi(const UzayAraci this){
 void varacagiTarihiHesapla(const UzayAraci this,int gezegeninGunSaat){
     if (this->hedefeVaracagiTarih != NULL) {
         free(this->hedefeVaracagiTarih);
+        this->hedefeVaracagiTarih = NULL;
     }
     Zaman hedefeVaracagiTarih= this->cikisTarihi->saatAlTarihiHesapla(this->cikisTarihi,this->mesafeSaat,gezegeninGunSaat);
     char* tarihStr = hedefeVaracagiTarih->toString(hedefeVaracagiTarih);
     this->hedefeVaracagiTarih = strdup(tarihStr);
+    //daha sonra yazýlmýþ
+    free(tarihStr);
+    hedefeVaracagiTarih->yoket(hedefeVaracagiTarih);
     //this->hedefeVaracagiTarih= hedefeVaracagiTarih->toString(hedefeVaracagiTarih);
 }
 
@@ -111,7 +115,7 @@ char* toStringUzayAraci(const UzayAraci this) {
     char* tarihGosterim;
     
     // Buffer için yeterli alan ayýr
-    char* str = (char*)malloc(sizeof(char) * 200);
+    char* str = (char*)malloc(sizeof(char) * 256);
     if (str == NULL) {
         return NULL; // Bellek hatasý durumunda NULL dön
     }
@@ -164,56 +168,3 @@ void uzayAraciYoket(UzayAraci this) {
     
     free(this);
 }
-/*char* toStringUzayAraci(const UzayAraci this){
-
-    char* yolDurumu;
-    int toplamUzunluk=36;
-    toplamUzunluk+=strlen(this->isim);
-    toplamUzunluk+=strlen(this->cikisGezegeni);
-    toplamUzunluk+=strlen(this->varisGezegeni);
-    if(this->imha){
-        yolDurumu="IMHA";
-        toplamUzunluk+=strlen(yolDurumu);
-        char* str=(char*)malloc(sizeof(char)*toplamUzunluk);
-        sprintf(str, "%-25s %-25s %-25s %-25s %-25s %-25s", this->isim, 
-            yolDurumu,this->cikisGezegeni,this->varisGezegeni,"--","--");
-            return str;
-    }
-    else{
-        if(this->hedefeUlastiMi(this)){
-            yolDurumu="Vardi";
-            toplamUzunluk+=strlen(yolDurumu);
-        }
-        else if(this->yoldaMi(this)){
-            yolDurumu="Yolda";
-            toplamUzunluk+=strlen(yolDurumu);
-        }
-        else{
-            yolDurumu="Bekliyor";
-            toplamUzunluk+=strlen(yolDurumu);
-        }
-
-        char* str=(char*)malloc(sizeof(char)*toplamUzunluk);
-        sprintf(str, "%-25s %-25s %-25s %-25s %-25d %-25s", this->isim, 
-            yolDurumu,this->cikisGezegeni,this->varisGezegeni,this->kalanSaat,this->hedefeVaracagiTarih);
-            return str;
-    }
-
-}*/
-/*void uzayAraciYoket(UzayAraci this){
-    if(this->yolcular!=NULL){
-        for(int i=0; i < this->yolcular->boyut; i++){
-            if(this->yolcular->kisiler[i]!=NULL){
-                this->yolcular->kisiler[i]->yoket(this->yolcular->kisiler[i]);
-            }
-        }
-        free(this->yolcular->kisiler);
-        free(this->yolcular);
-    }
-    free(this->isim);
-    free(this->cikisGezegeni);
-    free(this->varisGezegeni);
-    free(this);
-}*/
-
-//arrayliste ait fonksiyonlar

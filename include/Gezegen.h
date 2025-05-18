@@ -7,6 +7,7 @@ struct GEZEGEN{
     char* isim;
     int gununSaatSayisi;
     Zaman tarih;
+    //float yaslanmaKatsayisi;
     kisiArrayList nufus;
     uzayAraciArrayList araclar;
     char* (*getIsim)(struct GEZEGEN*);
@@ -36,4 +37,4 @@ void gezegenYoket(Gezegen);
 
 //arrayliste ait fonksiyonlar
 
-#endif // GEZEGEN_H
+#endif 

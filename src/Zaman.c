@@ -55,7 +55,7 @@ Zaman saatAlTarihiHesapla(const Zaman this,int girilenSaat,int girilenGunSaat){
         }
      }
     Zaman yeniZaman = zamanOlusturucu(yeniGun,yeniAy,yeniYil);
-    this->saat=yeniSaat;
+    yeniZaman->saat=yeniSaat;
     return yeniZaman;
 }
 

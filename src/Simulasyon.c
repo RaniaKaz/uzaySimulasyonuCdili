@@ -13,7 +13,6 @@ Simulasyon simulasyonOlusturucu(){
     this->gezegenBul = &gezegenBul;
     this->tumAraclarVardiMi = &tumAraclarVardiMi;
     this->gezegenZamani = &gezegenZamani;
-    this->bekle = &bekle;
     this->yoket=&yoketSimulasyon;
     Kisi kisi;
     UzayAraci uzayAraci;
@@ -48,35 +47,47 @@ Simulasyon simulasyonOlusturucu(){
     }
         return this;
 }
+
 void baslat(Simulasyon this){
     int saat=0;
     while(!this->tumAraclarVardiMi(this)){
         this->birSaatIlerle(this);
         this->ekranGuncelle(this,saat);
-
-        this->bekle(500);
-
         saat++;
     }
     this->ekranGuncelle(this,saat);
 }
+
 void birSaatIlerleSimulasyon(const Simulasyon this){
     for(int i=0; i<this->gezegenler->boyut; i++){
         Gezegen gezegen = this->gezegenler->gezegenler[i];
         gezegen->birSaatGecir(gezegen);
-        gezegen->nufusuGuncelle(gezegen);
-        //printf("gezegen->nufusuGuncelle(gezegen); calisti");
+        //printf(" birsaatgexir calisti ");
+        gezegen->nufusuGuncelle(gezegen); //sorun burada
+        //printf(" gezegen->nufusuGuncelle(gezegen); calisti ");
     }
+    //buraya hiç girmiyor
     for(int i=0; i<this->uzayAraclari->boyut; i++){
-        UzayAraci uzayAraci = this->uzayAraclari->uzayAraclari[i];
-        uzayAraci->birSaatGecir(uzayAraci,this->gezegenZamani(this,uzayAraci->getCikisGezegeni(uzayAraci)));
-        //printf(" -kontrol- ");
+        UzayAraci arac=this->uzayAraclari->uzayAraclari[i];
+        arac->birSaatGecir(arac,gezegenZamani(this,arac->getCikisGezegeni(arac)));
+        arac->yolculariGuncelle(arac);
+
+       // printf(" -kontrol- 3 ");
     }
-    for(int i=0; i<this->gezegenler->boyut;i++){
+   for(int i = 0; i < this->gezegenler->boyut; i++) {
         Gezegen gezegen = this->gezegenler->gezegenler[i];
-        for(int j=0; j< this->uzayAraclari->boyut; j++){
-            UzayAraci uzayAraci= this->uzayAraclari->uzayAraclari[j];
-            if(uzayAraci->hedefeUlastiMi(uzayAraci) && strcmp(uzayAraci->getVarisGezegeni(uzayAraci),gezegen->getIsim(gezegen)) == 0){
+        if (gezegen == NULL) continue;
+        
+        for(int j = 0; j < this->uzayAraclari->boyut; j++) {
+            UzayAraci uzayAraci = this->uzayAraclari->uzayAraclari[j];
+            if (uzayAraci == NULL) continue;
+            
+            if(uzayAraci->hedefeUlastiMi(uzayAraci) && 
+               !uzayAraci->imhaMi(uzayAraci) &&
+               strcmp(uzayAraci->getVarisGezegeni(uzayAraci), gezegen->getIsim(gezegen)) == 0) {
+                
+                // ÖNEMLÝ: Burada aracýn içindeki yolcular gezegene taþýnýyor
+                // Bu yolcularýn referansýný takip etmeliyiz, aksi takdirde double free olabilir
                 gezegen->aractakiYolculariEkle(gezegen, uzayAraci);
             }
         }
@@ -126,13 +137,13 @@ void ekranGuncelle(const Simulasyon this, int saat){
         //printf(uzayAraci->toString(uzayAraci));
         //printf("\n");
                 // toString'ten dönen belleði al, yazdýr, sonra serbest býrak
-            char* str = uzayAraci->toString(uzayAraci);
-            if (str) {
-                printf("%s\n", str);
-                free(str); // Belleði serbest býrak!
-            } else {
-                printf("HATA: %d. uzay araci toString NULL!\n", i);
-            }
+        char* str = uzayAraci->toString(uzayAraci);
+        if (str) {
+            printf("%s\n", str);
+            free(str); // Belleði serbest býrak!
+        } else {
+            printf("HATA: %d. uzay araci toString NULL!\n", i);
+        }
 
         }
 }
@@ -161,15 +172,58 @@ Boolean tumAraclarVardiMi(const Simulasyon this){
     return TRUE;
 }
 
-void bekle(int ms){
-    Sleep(ms);
+void yoketSimulasyon(Simulasyon this) {
+    if(this == NULL) return; 
+    
+    // Önce gezegen ve uzay araçlarý arasýndaki karþýlýklý referanslarý temizleyelim
+    for(int i = 0; i < this->gezegenler->boyut; i++) {
+        Gezegen gezegen = this->gezegenler->gezegenler[i];
+        if (gezegen == NULL) continue;
+        
+        // Gezegenin yolcu listesini temizle ama yolcularý serbest býrakma
+        // Çünkü bu yolcular kisiler içinde de olabilir ve iki kez serbest býrakýlabilir
+        if (gezegen->getNufus != NULL && gezegen->getNufus(gezegen) != NULL) {
+            // Sadece listeyi temizle, içeriði yoketme
+            gezegen->getNufus(gezegen)->clear(gezegen->getNufus(gezegen));
+        }
+    }
+    
+    // Benzer þekilde uzay araçlarýndaki yolcu referanslarýný temizleyelim
+    for(int i = 0; i < this->uzayAraclari->boyut; i++) {
+        UzayAraci uzayAraci = this->uzayAraclari->uzayAraclari[i];
+        if (uzayAraci == NULL) continue;
+        
+        // Uzay aracýndaki yolcu listesini temizle ama yolcularý serbest býrakma
+        if (uzayAraci->yolcular != NULL && uzayAraci->yolcular != NULL) {
+            // Sadece listeyi temizle, içeriði yoketme
+            uzayAraci->yolcular->clear(uzayAraci->yolcular);
+        }
+    }
+    
+    // Þimdi ana listeleri yokedelim
+    if (this->kisiler != NULL) {
+        this->kisiler->yoket(this->kisiler);
+    }
+    
+    if (this->gezegenler != NULL) {
+        this->gezegenler->yoket(this->gezegenler);
+    }
+    
+    if (this->uzayAraclari != NULL) {
+        this->uzayAraclari->yoket(this->uzayAraclari);
+    }
+    
+    if (this->dosyaOkuma != NULL) {
+        this->dosyaOkuma->yoket(this->dosyaOkuma);
+    }
+    
+    free(this);
 }
-
-void yoketSimulasyon(Simulasyon this){
+/*void yoketSimulasyon(Simulasyon this){
    if(this==NULL) return; 
    this->kisiler->yoket(this->kisiler);
    this->gezegenler->yoket(this->gezegenler);
    this->uzayAraclari->yoket(this->uzayAraclari);
    this->dosyaOkuma->yoket(this->dosyaOkuma);
    free(this);
-}
+}*/
